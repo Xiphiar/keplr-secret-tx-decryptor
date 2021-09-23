@@ -1,6 +1,8 @@
 const { SigningCosmWasmClient } = require("secretjs");
-const chainId = "secret-2";
+const chainId = "secret-3";
 
+var secretJs;
+var accounts;
 
 window.onload = async () => {
     // Keplr extension injects the offline signer that is compatible with secretJS.
@@ -25,19 +27,19 @@ window.onload = async () => {
     // But, currently, Keplr extension manages only one address/public key pair.
     // XXX: This line is needed to set the sender address for SigningCosmosClient.
     // Save it to the window variable
-    window.accounts = await offlineSigner.getAccounts();
+    accounts = await offlineSigner.getAccounts();
 	
 
     // Initialize the gaia api with the offline signer that is injected by Keplr extension.
     // Save it to the window variable
-	window.secretJS = new SigningCosmWasmClient(
+	secretJS = new SigningCosmWasmClient(
 		"https://lcd.scrt-archive.xiphiar.com",
 		accounts[0].address,
 		offlineSigner,
 		enigmaUtils
 	);
 
-    document.getElementById("address").append(window.accounts[0].address);
+    document.getElementById("address").append(accounts[0].address);
 };
 
 document.sendForm.onsubmit = () => {
@@ -45,7 +47,7 @@ document.sendForm.onsubmit = () => {
 
     (async () => {
 
-        let decrypted = await window.secretJS.restClient.txById(txHash, true);
+        let decrypted = await secretJS.restClient.txById(txHash, true);
         console.log(decrypted.tx.value.msg[0].value);
         //document.getElementById("execmsg").append("<pre>", decrypted, "</pre>");
         delete decrypted.data;
