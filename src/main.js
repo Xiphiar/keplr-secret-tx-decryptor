@@ -1,6 +1,9 @@
 const { SigningCosmWasmClient } = require("secretjs");
 const chainId = "secret-3";
 
+const textEncoding = require('text-encoding');
+const TextDecoder = textEncoding.TextDecoder;
+
 var secretJs;
 var accounts;
 
@@ -48,9 +51,8 @@ document.sendForm.onsubmit = () => {
     (async () => {
 
         let decrypted = await secretJS.restClient.txById(txHash, true);
-        console.log(decrypted.tx.value.msg[0].value);
-        //document.getElementById("execmsg").append("<pre>", decrypted, "</pre>");
-        delete decrypted.data;
+        //delete decrypted.data;
+        decrypted.data = new TextDecoder().decode(decrypted.data);
         let pretty = JSON.stringify(decrypted, undefined, 2);
         document.getElementById('execmsg').innerHTML = `<pre>${pretty}</pre>`;
         //decrypted.tx.value.msg[0].msg=atob(decrypted.tx.value.msg[0].msg);
